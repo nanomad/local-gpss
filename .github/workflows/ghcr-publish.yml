@@ -7,8 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Git tag to build (e.g. v2.0.1)"
+        description: "Git ref to build (tag or branch)"
         required: true
+      version:
+        description: "Image version tag, when ref is not a v* tag (e.g. 2.0.1)"
+        required: false
 
 permissions:
   contents: read
@@ -27,7 +30,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/local-gpss
           tags: |
-            type=semver,pattern={{version}},value=${{ inputs.ref || github.ref_name }}
+            type=semver,pattern={{version}},value=${{ inputs.version || inputs.ref || github.ref_name }}
             type=raw,value=latest
 
       - uses: docker/login-action@v3
