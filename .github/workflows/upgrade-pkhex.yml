@@ -2,6 +2,10 @@ name: Upgrade PKHeX DLLs
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "PKHeX release tag (e.g. 26.08.26); must exist in both kwsch/PKHeX and santacrab2/PKHeX-Plugins"
+        required: true
 
 permissions:
   contents: write
@@ -16,12 +20,12 @@ jobs:
 
       - name: Checkout PKHeX Plugins
         run: |
-          git clone -q --depth=5 --branch=cherrytree https://github.com/santacrab2/PKHeX-Plugins.git ${{ github.workspace }}/PKHeX-Plugins
+          git clone -q --depth=1 --branch=${{ inputs.version }} https://github.com/santacrab2/PKHeX-Plugins.git ${{ github.workspace }}/PKHeX-Plugins
 
 
       - name: Checkout PKHeX
         run: |
-          git clone -q --depth=5 --branch=master https://github.com/kwsch/PKHeX.git ${{ github.workspace }}/PKHeX
+          git clone -q --depth=1 --branch=${{ inputs.version }} https://github.com/kwsch/PKHeX.git ${{ github.workspace }}/PKHeX
 
       - name: Setup .NET 10.0
         uses: actions/setup-dotnet@v5
@@ -85,5 +89,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add GpssConsole/deps/PKHeX.Core.dll GpssConsole/deps/PKHeX.Core.AutoMod.dll
-          git commit -m "Update PKHeX.Core.dll and PKHeX.Core.AutoMod.dll"
+          git commit -m "Update PKHeX.Core.dll and PKHeX.Core.AutoMod.dll to ${{ inputs.version }}"
           git push origin ${{ github.event.repository.default_branch }}
